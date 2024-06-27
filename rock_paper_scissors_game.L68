@@ -1,0 +1,348 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.14.01
+Created On: 01/05/2021 23:47:15
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :Rock Paper Scissors
+00000000                             3  * Written by :Shivangi Prajapati
+00000000                             4  * Date       :01/05/21
+00000000                             5  * Description:Rock, Paper, Scissors game where the players 
+00000000                             6  *             have 3 rounds and the one who wins most of them 
+00000000                             7  *             wins the game. The players will be aslo asked 
+00000000                             8  *             to enter their name.
+00000000                             9  *-----------------------------------------------------------
+00001000                            10      ORG    $1000
+00001000                            11  START:                  ; first instruction of program
+00001000                            12  *Put program code here
+00001000                            13  *----------------------------------------
+00001000                            14  *player 1 will win when P1- P2 = -1 or 2 
+00001000                            15  *player 2 will win when P1- P2 = 1 or -2  
+00001000                            16  *TIE will be when P1-P2 = 0 
+00001000                            17  *----------------------------------------  
+00001000                            18  *-------- display message --------
+00001000  6100 0250                 19  game:        bsr       clearScreen
+00001004  47F9 00001496             20               lea       arrayScore,A3   #A3 reserved for array
+0000100A                            21  *          introduction message         
+0000100A  43F9 0000126C             22               lea       intro,A1         
+00001010  6100 006A                 23               bsr       display
+00001014                            24  *          instructions
+00001014  43F9 00001321             25               lea       description,a1
+0000101A  6100 0060                 26               bsr       display 
+0000101E                            27  *-------- Gets the name of the Players ------------
+0000101E                            28  *          player 1
+0000101E  6100 006C                 29                bsr      newLine 
+00001022  43F9 0000135A             30                lea      PlayerMsg1,a1
+00001028  6100 0052                 31                bsr      display     
+0000102C  43F9 0000147E             32                lea      name1,A1
+00001032  6100 002C                 33                bsr      getName
+00001036                            34             
+00001036                            35  *          player 2 
+00001036  6100 0054                 36                bsr      newLine         
+0000103A  43F9 0000136A             37                lea      PlayerMsg2,a1
+00001040  6100 003A                 38                bsr      display  
+00001044  43F9 0000148A             39                lea      name2,A1
+0000104A  6100 0014                 40                bsr      getName
+0000104E                            41             
+0000104E                            42  
+0000104E                            43  *          game message
+0000104E  6100 003C                 44                bsr      newLine 
+00001052  43F9 0000137A             45                lea      newGame,A1
+00001058  6100 0022                 46                bsr      display 
+0000105C                            47             
+0000105C                            48  *          user Input           
+0000105C  6000 0038                 49                bra     playerOne
+00001060                            50             
+00001060  303C 0002                 51  getName:      move    #2,d0
+00001064  4E4F                      52                trap    #15
+00001066  4E75                      53                rts
+00001068                            54          
+00001068  6100 0012                 55  user:         bsr     display         #display finction called 
+0000106C  43F9 0000139D             56                lea     dots,a1
+00001072  6100 0008                 57                bsr     display
+00001076  6100 000C                 58                bsr     userInput
+0000107A  4E75                      59                rts 
+0000107C                            60             
+0000107C  303C 000E                 61  display:      move    #14,d0
+00001080  4E4F                      62                trap    #15
+00001082  4E75                      63                rts
+00001084                            64            
+00001084                            65             
+00001084  303C 0004                 66  userInput:    move    #4,d0
+00001088  4E4F                      67                trap    #15
+0000108A  4E75                      68                rts
+0000108C                            69  
+0000108C  43F9 0000149B             70  newLine:      lea     line,A1
+00001092  61E8                      71                bsr     display
+00001094  4E75                      72                rts
+00001096                            73           
+00001096                            74  *-------- Game start, gets user input ------------
+00001096                            75            
+00001096  61F4                      76  playerOne:    bsr     newLine 
+00001098  43F9 0000147E             77                lea     name1,a1        #first player,load the address of the message to display
+0000109E  61C8                      78                bsr     user            #for user input
+000010A0  343C 0001                 79                move    #1,d2           #save player id for returning to the function
+000010A4  6100 0024                 80                bsr     validation      #validation fucntion called 
+000010A8  343C 0000                 81                move    #0,d2
+000010AC  13C1 0000147B             82                move.b  d1,player1      #save the value in a variable
+000010B2                            83           
+000010B2                            84             
+000010B2  61D8                      85  playerTwo:    bsr     newLine 
+000010B4  43F9 0000148A             86                lea     name2,a1        #second player, load the address of the message to display
+000010BA  61AC                      87                bsr     user            #for user input    
+000010BC  6100 000C                 88                bsr     validation      #validation function called 
+000010C0  13C1 0000147C             89                move.b  d1,player2      #save the user input in the variable 
+000010C6  6000 0026                 90                bra     winner          #check who won the game
+000010CA                            91  
+000010CA                            92            
+000010CA                            93  *-------- Validate user Input ------------     
+000010CA  B23C 0001                 94  validation:   cmp.b   #1,d1         
+000010CE  6D00 000C                 95                blt     error           #user input cannot be less than 1
+000010D2  B23C 0003                 96                cmp.b   #3,d1
+000010D6  6200 0004                 97                bhi     error           #user input cannot be more than 3
+000010DA  4E75                      98                rts                     #return if conditions are not met which means user input is accepted 
+000010DC                            99  
+000010DC                           100  
+000010DC                           101  
+000010DC  61AE                     102  error:        bsr     newLine
+000010DE  43F9 000013CE            103                lea     errMsg,A1       #display error message
+000010E4  6196                     104                bsr     display
+000010E6  B43C 0001                105                cmp.b   #1,d2           #look for the player id 
+000010EA  67AA                     106                beq     playerOne       #if player 1, than ask player 1 again
+000010EC  60C4                     107                bra     playertwo       #else ask player 2
+000010EE                           108  
+000010EE                           109  
+000010EE                           110  *-------- Find the winner of the round ------------ 
+000010EE                           111  *player 1 will win when P1- P2 = -1 or 2 
+000010EE                           112  *player 2 will win when P1- P2 = 1 or -2  
+000010EE                           113  *TIE will be when P1-P2 = 0
+000010EE                           114  *A3 only for array
+000010EE                           115  *--------------------------------------------------
+000010EE                           116  
+000010EE  1239 0000147C            117  winner:       move.b  player2,d1      #move the player2 choice in d1
+000010F4  9339 0000147B            118                sub.b   d1,player1      #perform player1-player2 operation 
+000010FA                           119                 
+000010FA                           120              *look for -1 or 2
+000010FA  0C39 0000 0000147B       121                cmp.b   #0,player1
+00001102  6700 0036                122                beq     tie
+00001106  0C39 00FF 0000147B       123                cmp.b   #$ff,player1    #compare to see if is -1
+0000110E  6700 004A                124                beq     playerWon1      #if yes than player 1 won
+00001112  0C39 0002 0000147B       125                cmp.b   #2, player1     #compare if 2
+0000111A  6700 003E                126                beq     playerWon1      #if yes than player 1 won
+0000111E  6100 FF6C                127                bsr     newLine
+00001122  43F9 000013B1            128                lea     winnerMsg2,A1   #else player 2 won 
+00001128  13FC 0002 00001499       129                move.b  #2,wonPlayer    #save player ID
+00001130  6100 FF4A                130                bsr     display 
+00001134  6000 003A                131                bra     scoring
+00001138  4E75                     132                rts
+0000113A                           133  *-------- Tie case -------------------------- 
+0000113A  6100 FF50                134  tie:          bsr     newLine 
+0000113E  43F9 000013C1            135                lea     tieMsg,A1
+00001144  6100 FF36                136                bsr     display
+00001148  6100 FF42                137                bsr     newLine 
+0000114C  43F9 0000137A            138                lea     newGame,A1
+00001152  6100 FF28                139                bsr     display
+00001156  6000 FF3E                140                bra     playerOne
+0000115A                           141            
+0000115A                           142  *-------- Player 1 winning message ------------                      
+0000115A  6100 FF30                143  playerWon1:   bsr     newLine 
+0000115E  43F9 000013A1            144                lea     winnerMsg1,A1    
+00001164  6100 FF16                145                bsr     display
+00001168  13FC 0001 00001499       146                move.b  #1,wonPlayer    #save player ID
+00001170                           147              
+00001170                           148             
+00001170                           149  *-------- Assigning scores ------------------          
+00001170  4A13                     150  scoring:      tst.b   (A3)            #check if array location is empty
+00001172  6700 0008                151                beq     addScore        #if not than add the value
+00001176  1213                     152                move.b  (a3),d1         #move in d1 
+00001178  16C1                     153                move.b  d1,(A3)+        #move back in array and point to next element
+0000117A  60F4                     154                bra     scoring   
+0000117C                           155  
+0000117C                           156  
+0000117C  1239 00001499            157  addScore:     move.b  wonPlayer,d1    #get player ID
+00001182  1681                     158                move.b  d1,(A3)         #save in array
+00001184  5339 0000149A            159                sub.b   #1,limitGame    #once added reduce the number of attempts left
+0000118A  4A39 0000149A            160                tst.b   (limitGame)     #check the number of limits left 
+00001190  6700 0010                161                beq     finalScores     #if no than end game 
+00001194  43F9 0000137A            162                lea     newGame,A1      #else display next game message
+0000119A  6100 FEE0                163                bsr     display
+0000119E  6000 FEF6                164                bra     playerOne       #start the next round
+000011A2                           165  
+000011A2                           166       
+000011A2                           167  *-------- Final Scoring ---------------------     
+000011A2                           168            
+000011A2  6100 FEE8                169  finalScores:  bsr     newLine 
+000011A6  43F9 000013EB            170                lea     finalMsg,A1     #display attempts finished message
+000011AC  6100 FECE                171                bsr     display
+000011B0  143C 0000                172                move.b  #0,d2           #d2 keeps the counting for player 1
+000011B4  163C 0000                173                move.b  #0,d3           #d3 keeps counting for player 2
+000011B8  47F9 00001496            174                lea     arrayScore,A3 
+000011BE                           175                
+000011BE                           176                
+000011BE  4A13                     177  counting:     tst.b   (A3)            #checking array to find which player has won the game 
+000011C0  6700 0018                178                beq     displayScore    #if zero mens end of array
+000011C4  1213                     179                move.b  (a3),d1
+000011C6  0C13 0001                180                cmp.b   #1,(A3)         #check if the location has 1, player 1 ID 
+000011CA  6700 0008                181                beq     scores        
+000011CE  5203                     182                add.b   #1,d3           #increase count for player 2
+000011D0  16C1                     183                move.b  d1,(A3)+        #check next location
+000011D2  60EA                     184                bra     counting
+000011D4                           185  
+000011D4  5202                     186  scores:       add.b   #1,d2           #increase the count for player 1 
+000011D6  16C1                     187                move.b  d1,(A3)+        #next location
+000011D8  60E4                     188                bra     counting 
+000011DA                           189                
+000011DA                           190  *-------- Display socres and final winner ------------
+000011DA                           191   
+000011DA  B602                     192  displayscore: cmp.b   d2,d3           #if d2 greater means player 1 won ,else player 2
+000011DC  6200 001E                193                bhi     finalWinner     #if greater condition
+000011E0  6100 FEAA                194                bsr     newLine 
+000011E4  43F9 00001411            195                lea     endWinner,A1    #display player 1 winning message
+000011EA  6100 FE90                196                bsr     display
+000011EE  43F9 0000147E            197                lea     name1,A1
+000011F4  6100 FE86                198                bsr     display
+000011F8  6000 001A                199                bra     playAgain
+000011FC                           200                              
+000011FC                           201                
+000011FC  6100 FE8E                202  finalWinner:  bsr     newLine 
+00001200  43F9 00001411            203                lea     endWinner,A1    #display player 2 winning message
+00001206  6100 FE74                204                bsr     display
+0000120A  43F9 0000148A            205                lea     name2,A1
+00001210  6100 FE6A                206                bsr     display
+00001214                           207                
+00001214                           208                
+00001214                           209  *-------- Ask if they want to play again ------------
+00001214                           210               
+00001214  6100 FE76                211  playAgain:    bsr     newLine 
+00001218  43F9 00001426            212                lea     playAgainMsg,A1  #ask for new game 
+0000121E  6100 FE5C                213                bsr     display
+00001222  303C 0005                214                move    #5,d0
+00001226  4E4F                     215                trap    #15
+00001228  B23C 0079                216                cmp.b   #$79,d1          #if yes 
+0000122C  6600 0030                217                bne     end              #if anything diffrent from y
+00001230                           218            
+00001230  13FC 0003 0000149A       219                move.b  #3,limitGame     #reset attempts to 3
+00001238  47F9 00001496            220                lea     arrayScore,A3    #reset the score array to 0s
+0000123E  16BC 0000                221                move.b  #0,(A3)
+00001242  177C 0000 0001           222                move.b  #0,(1,A3)
+00001248  177C 0000 0002           223                move.b  #0,(2,A3)
+0000124E  6700 FDB0                224                beq     game             #restart the game
+00001252                           225                
+00001252                           226                                        
+00001252                           227                
+00001252                           228                
+00001252  303C 000B                229  clearScreen:  move    #11,d0
+00001256  323C FF00                230                move    #$FF00,d1
+0000125A  4E4F                     231                trap    #15
+0000125C  4E75                     232                rts
+0000125E                           233  
+0000125E  43F9 00001459            234  end:          lea     message,a1
+00001264  6100 FE16                235                bsr     display
+00001268  4E72 2000                236                Stop    #$2000           #end of game 
+0000126C                           237  
+0000126C                           238  
+0000126C                           239                
+0000126C                           240  
+0000126C                           241  
+0000126C                           242  
+0000126C                           243  
+0000126C                           244  
+0000126C                           245  
+0000126C                           246  
+0000126C                           247  * Put variables and constants here
+0000126C= 0D 0A 09 09 09 09        248  intro        dc.b    $0D,$0A,$09,$09,$09,$09
+00001272= 2D 2D 2D 2D 2D 2D ...    249               dc.b   '------------------------------',$0D,$0A,$09,$09,$09,$09
+00001296= 20 20 20 20 20 20 ...    250               dc.b   '      Rock Paper Scissors ',$0D,$0A,$09,$09,$09,$09
+000012B6= 2D 2D 2D 2D 2D 2D ...    251               dc.b   '------------------------------',$0D,$0A,$0D,$0A,$09,$09,$09,$09
+000012DC= 59 6F 75 20 77 69 ...    252               dc.b   'You will have 3 rounds to play',$0D,$0A,$09,$09,$09,$09
+00001300= 45 6E 74 65 72 20 ...    253               dc.b   'Enter your names Please!',$0D,$0A,$0D,$0A,$09,$09,$09,$09,0
+00001321                           254  
+00001321= 49 6E 73 74 72 75 ...    255  description  dc.b   'Instructions to Play: Scissors(1), Paper(2), Rock(3)',$0D,$0A,$0D,$0A,0
+0000135A= 50 6C 61 79 65 72 ...    256  playerMsg1   dc.b   'Player 1 name: ',0
+0000136A= 50 6C 61 79 65 72 ...    257  playerMsg2   dc.b   'Player 2 name: ',0
+0000137A                           258  
+0000137A                           259  
+0000137A= 0D 0A 09 09 09 09        260  newGame      dc.b   $0D,$0A,$09,$09,$09,$09 
+00001380= 3D 3D 3D 3D 3D 3D ...    261               dc.b   '========== Game ==========',$0D,$0A,0
+0000139D= 20 3A 20 00              262  dots         dc.b   ' : ',0 //gurda questo
+000013A1= 50 6C 61 79 65 72 ...    263  winnerMsg1   dc.b   'Player 1 Won!!!',0
+000013B1= 50 6C 61 79 65 72 ...    264  winnerMsg2   dc.b   'Player 2 Won!!!',0
+000013C1= 49 73 20 61 20 74 ...    265  tieMsg       dc.b   'Is a tie!!',$0D,$0A,0
+000013CE= 49 6E 76 61 6C 69 ...    266  errMsg       dc.b   'Invalid Option! Try agian!',$0D,$0A,0
+000013EB= 0D 0A 0D 0A 09 09 ...    267  finalMsg     dc.b   $0D,$0A,$0D,$0A,$09,$09,$09,$09 
+000013F3= 2A 2A 2A 2A 20 41 ...    268               dc.b   '**** Attemps finished! ****',$0D,$0A,0
+00001411                           269               
+00001411= 0D 0A 09 09 09 09        270  endWinner    dc.b   $0D,$0A,$09,$09,$09,$09 
+00001417= 54 68 65 20 57 69 ...    271               dc.b   'The Winner is ',0
+00001426                           272             
+00001426= 0D 0A 0D 0A 09 09 ...    273  playAgainMsg dc.b   $0D,$0A,$0D,$0A,$09,$09,$09,$09 
+0000142E= 44 6F 20 79 6F 75 ...    274               dc.b   'Do you want to play again: yes (y), no(n):',0
+00001459                           275               
+00001459= 0D 0A 0D 0A 09 09 ...    276  message      dc.b   $0D,$0A,$0D,$0A,$09,$09,$09,$09
+00001461= 54 68 61 6E 6B 20 ...    277               dc.b   'Thank You for playing!!',$0D,$0A,0
+0000147B                           278               
+0000147B                           279  player1      ds.b   1
+0000147C                           280  player2      ds.b   1
+0000147E                           281  name1        ds.l   3
+0000148A                           282  name2        ds.l   3
+00001496= 00 00 00                 283  arrayScore   dc.b   0,0,0
+00001499                           284  wonPlayer    ds.b   1
+0000149A= 03                       285  limitGame    dc.b   3
+0000149B= 09 09 09 09 00           286  line         dc.b   $09,$09,$09,$09,0
+000014A0                           287  
+000014A0                           288  
+000014A0                           289  
+000014A0                           290      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ADDSCORE            117C
+ARRAYSCORE          1496
+CLEARSCREEN         1252
+COUNTING            11BE
+DESCRIPTION         1321
+DISPLAY             107C
+DISPLAYSCORE        11DA
+DOTS                139D
+END                 125E
+ENDWINNER           1411
+ERRMSG              13CE
+ERROR               10DC
+FINALMSG            13EB
+FINALSCORES         11A2
+FINALWINNER         11FC
+GAME                1000
+GETNAME             1060
+INTRO               126C
+LIMITGAME           149A
+LINE                149B
+MESSAGE             1459
+NAME1               147E
+NAME2               148A
+NEWGAME             137A
+NEWLINE             108C
+PLAYAGAIN           1214
+PLAYAGAINMSG        1426
+PLAYER1             147B
+PLAYER2             147C
+PLAYERMSG1          135A
+PLAYERMSG2          136A
+PLAYERONE           1096
+PLAYERTWO           10B2
+PLAYERWON1          115A
+SCORES              11D4
+SCORING             1170
+START               1000
+TIE                 113A
+TIEMSG              13C1
+USER                1068
+USERINPUT           1084
+VALIDATION          10CA
+WINNER              10EE
+WINNERMSG1          13A1
+WINNERMSG2          13B1
+WONPLAYER           1499
